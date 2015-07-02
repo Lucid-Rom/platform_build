@@ -576,6 +576,16 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   device_specific.FullOTA_InstallBegin()
 
+  if OPTIONS.backuptool:
+    if block_based:
+      common.ZipWriteStr(output_zip, "system/bin/backuptool.sh",
+                     ""+input_zip.read("SYSTEM/bin/backuptool.sh"))
+      common.ZipWriteStr(output_zip, "system/bin/backuptool.functions",
+                     ""+input_zip.read("SYSTEM/bin/backuptool.functions"))
+    script.Mount("/system")
+    script.RunBackup("backup")
+    script.Unmount("/system")
+  
   system_progress = 0.75
 
   if OPTIONS.wipe_user_data:
