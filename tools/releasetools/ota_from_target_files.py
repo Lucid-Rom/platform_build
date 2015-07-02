@@ -672,13 +672,51 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     script.Mount("/system")
     script.FlashSuperSU()
   
+  script.Print(" ")
+  script.Print(" ___    ______       _____________             _____               ")
+  script.Print(" __ |  / /__(_)____________  /__(_)___________ __  /______________ ")
+  script.Print(" __ | / /__  /__  __ \  __  /__  /_  ___/  __ \/  __/  __ \_  ___/ ")
+  script.Print(" __ |/ / _  / _  / / / /_/ / _  / / /__ / /_/ // /_ / /_/ /  /     ")
+  script.Print(" _____/  /_/  /_/ /_/\__,_/  /_/  \___/ \__,_/\\__/ \____//_/      ")                                                           
+  script.Print(" ")
+  
+  script.SetProgress(0.700000)
+  script.Print("Mounting filesystems...")
   if block_based:
+    script.Mount("/system")
+    script.Mount("/data")
+  script.SetProgress(0.750000)
+  
+  script.Print("Deleting old files...")
+  script.DeleteRecursive("/data/N4UKM", "/data/UKM")
+  script.DeleteFiles(['/system/etc/init.d/N4UK', '/system/etc/init.d/UKM', '/system/etc/init.d/UKM_WAKE', '/system/xbin/uci', '/system/addon.d/UKM.sh'])
+  script.SetProgress(0.800000)
+  
+  script.Print("Installing UKM...")
+  script.InstallUKM()
+  script.SetProgress(0.850000)
+  
+  script.Print("Setting permissions...")
+  script.SetUKMPerms()
+  script.SetProgress(0.900000)
+  
+  if block_based:
+    script.Unmount("/data")
     script.Unmount("/system")
-
-  script.ShowProgress(0.05, 5)
-  script.WriteRawImage("/boot", "boot.img")
-
-  script.ShowProgress(0.2, 10)
+  script.SetProgress(0.950000)  
+  
+  script.Print("Flashing kernel image...")
+  script.InstallCustomKernel()
+  script.SetProgress(1.000000)
+  
+  script.Print("****************************************");
+  script.Print("*          Install Complete            *");
+  script.Print("*        Control With Synapse          *");
+  script.Print("****************************************");
+  script.Print("*       Universal Kernel Manager       *");
+  script.Print("*         Created by apb_axel          *");
+  script.Print("****************************************");
+  
   device_specific.FullOTA_InstallEnd()
 
   if OPTIONS.extra_script is not None:
